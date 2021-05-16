@@ -1,17 +1,18 @@
 package com.example.androidmicroproject.model;
 
-import java.time.LocalTime;
+import java.util.GregorianCalendar;
 
 public class Weather {
     public final Temperature temperature;
     public final double humidity;
     public final String city, state, country;
-    public final LocalTime sunriseTime, sunsetTime;
+    public final GregorianCalendar sunriseTime, sunsetTime;
     public final int airQualityIndex;
+    public final Cloudiness cloudiness;
 
     public Weather(Temperature temperature, double humidity, String city,
-                   String state, String country, LocalTime sunriseTime,
-                   LocalTime sunsetTime, int airQualityIndex) {
+                   String state, String country, GregorianCalendar sunriseTime,
+                   GregorianCalendar sunsetTime, int airQualityIndex, Cloudiness cloudiness) {
         this.temperature = temperature;
         this.humidity = humidity;
         this.city = city;
@@ -20,5 +21,6 @@ public class Weather {
         this.sunriseTime = sunriseTime;
         this.sunsetTime = sunsetTime;
         this.airQualityIndex = airQualityIndex;
+        this.cloudiness = cloudiness;
     }
 }

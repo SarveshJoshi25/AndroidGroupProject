@@ -4,6 +4,8 @@ import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 
+import static com.example.androidmicroproject.DateTimeUtil.formatTime;
+
 public class Weather {
 
     public final Temperature temperature;
@@ -27,8 +29,6 @@ public class Weather {
         this.cloudiness = cloudiness;
     }
 
-    private static final SimpleDateFormat fmt = new SimpleDateFormat("yyyy/MM/dd", Locale.US);
-
     @Override
     public String toString() {
         return "Weather{" +
@@ -37,8 +37,8 @@ public class Weather {
                 ", city='" + city + '\'' +
                 ", state='" + state + '\'' +
                 ", country='" + country + '\'' +
-                ", sunriseTime=" + sunriseTime +
-                ", sunsetTime=" + sunsetTime +
+                ", sunriseTime=" + formatTime(sunriseTime) +
+                ", sunsetTime=" + formatTime(sunsetTime) +
                 ", airQualityIndex=" + airQualityIndex +
                 ", cloudiness=" + cloudiness +
                 '}';

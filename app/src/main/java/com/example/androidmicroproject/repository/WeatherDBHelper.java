@@ -10,13 +10,12 @@ import com.example.androidmicroproject.model.Cloudiness;
 import com.example.androidmicroproject.model.Temperature;
 import com.example.androidmicroproject.model.Weather;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.Locale;
 import java.util.Optional;
+
+import static com.example.androidmicroproject.DateTimeUtil.formatDate;
+import static com.example.androidmicroproject.DateTimeUtil.formatTime;
+import static com.example.androidmicroproject.DateTimeUtil.parseTime;
 
 public class WeatherDBHelper extends SQLiteOpenHelper {
 
@@ -102,7 +101,7 @@ public class WeatherDBHelper extends SQLiteOpenHelper {
 
     public void set(Weather weather, GregorianCalendar date) {
         SQLiteDatabase db = getWritableDatabase();
-        db.delete(TABLE, "city = ? and date_of_entry = ?", new String[]{weather.city, format(date)});
+        db.delete(TABLE, "city = ? and date_of_entry = ?", new String[]{weather.city, formatDate(date)});
         ContentValues values = new ContentValues();
         values.put("temp_min", weather.temperature.min);
         values.put("temp_max", weather.temperature.max);
@@ -114,13 +113,13 @@ public class WeatherDBHelper extends SQLiteOpenHelper {
         values.put("state", weather.state);
         values.put("country", weather.country);
 
-        values.put("sunrise_time", format(weather.sunriseTime));
-        values.put("sunset_time", format(weather.sunsetTime));
+        values.put("sunrise_time", formatTime(weather.sunriseTime));
+        values.put("sunset_time", formatTime(weather.sunsetTime));
 
         values.put("cloudiness", weather.cloudiness.ordinal());
         values.put("air_quality_index", weather.airQualityIndex);
 
-        values.put("date_of_entry", format(date));
+        values.put("date_of_entry", formatDate(date));
 
 
         db.insert(TABLE, null, values);
@@ -132,32 +131,13 @@ public class WeatherDBHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
     }
 
-    private static String format(GregorianCalendar calendar) {
-        final SimpleDateFormat fmt = new SimpleDateFormat("yyyy/MM/dd", Locale.US);
-        fmt.setCalendar(calendar);
-        return fmt.format(calendar.getTime());
-    }
-
-    private static GregorianCalendar parse(String date) {
-        final SimpleDateFormat fmt = new SimpleDateFormat("yyyy/MM/dd", Locale.US);
-        try {
-            Date parsedDate = fmt.parse(date);
-            GregorianCalendar calendar = new GregorianCalendar();
-            calendar.setTime(parsedDate);
-            return calendar;
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
     public Optional<Weather> weatherOf(String city, GregorianCalendar date) {
         final String WEATHER_FOR = "select temp_min, temp_max, temp_current, humidity, " +
                 "state, country, sunrise_time, sunset_time, air_quality_index, cloudiness " +
                 "from " + TABLE + " where date_of_entry = ? and city = ?";
 
         SQLiteDatabase db = getReadableDatabase();
-        try (Cursor cur = db.rawQuery(WEATHER_FOR, new String[]{format(date), city})) {
+        try (Cursor cur = db.rawQuery(WEATHER_FOR, new String[]{formatDate(date), city})) {
             if (!cur.moveToFirst()) {
                 return Optional.empty();
             }
@@ -172,8 +152,8 @@ public class WeatherDBHelper extends SQLiteOpenHelper {
                     city,
                     cur.getString(4),
                     cur.getString(5),
-                    parse(cur.getString(6)),
-                    parse(cur.getString(7)),
+                    parseTime(cur.getString(6)),
+                    parseTime(cur.getString(7)),
                     cur.getInt(8),
                     Cloudiness.values()[cur.getInt(9)]
                     )

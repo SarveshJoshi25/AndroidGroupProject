@@ -1,8 +1,11 @@
 package com.example.androidmicroproject.model;
 
+import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
+import java.util.Locale;
 
 public class Weather {
+
     public final Temperature temperature;
     public final double humidity;
     public final String city, state, country;
@@ -22,5 +25,22 @@ public class Weather {
         this.sunsetTime = sunsetTime;
         this.airQualityIndex = airQualityIndex;
         this.cloudiness = cloudiness;
+    }
+
+    private static final SimpleDateFormat fmt = new SimpleDateFormat("yyyy/MM/dd", Locale.US);
+
+    @Override
+    public String toString() {
+        return "Weather{" +
+                "temperature=" + temperature +
+                ", humidity=" + humidity +
+                ", city='" + city + '\'' +
+                ", state='" + state + '\'' +
+                ", country='" + country + '\'' +
+                ", sunriseTime=" + sunriseTime +
+                ", sunsetTime=" + sunsetTime +
+                ", airQualityIndex=" + airQualityIndex +
+                ", cloudiness=" + cloudiness +
+                '}';
     }
 }

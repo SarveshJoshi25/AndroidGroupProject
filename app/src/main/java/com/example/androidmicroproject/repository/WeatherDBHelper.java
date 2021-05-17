@@ -10,9 +10,13 @@ import com.example.androidmicroproject.model.Cloudiness;
 import com.example.androidmicroproject.model.Temperature;
 import com.example.androidmicroproject.model.Weather;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
+import java.util.Optional;
 
 public class WeatherDBHelper extends SQLiteOpenHelper {
 
@@ -34,7 +38,7 @@ public class WeatherDBHelper extends SQLiteOpenHelper {
             new GregorianCalendar(2021, 5, 16, 5, 30),
             new GregorianCalendar(2021, 5, 16, 17, 30),
             100,
-            Cloudiness.Cloudy
+            Cloudiness.Rainy
     );
 
     @Override
@@ -52,6 +56,7 @@ public class WeatherDBHelper extends SQLiteOpenHelper {
                 "sunrise_time text not null, " +
                 "sunset_time text not null, " +
                 "air_quality_index int not null," +
+                "cloudiness int not null, " +
                 "primary key(date_of_entry, city)" +
                 ")";
 
@@ -85,7 +90,7 @@ public class WeatherDBHelper extends SQLiteOpenHelper {
                         new GregorianCalendar(2021, 5, 16, 5, 30),
                         new GregorianCalendar(2021, 5, 16, 17, 30),
                         100,
-                        Cloudiness.Cloudy
+                        Cloudiness.Sunny
                 ),
                 new GregorianCalendar(2021, 5, 18)
         );
@@ -109,10 +114,14 @@ public class WeatherDBHelper extends SQLiteOpenHelper {
         values.put("state", weather.state);
         values.put("country", weather.country);
 
-        values.put("sunrise_time", weather.sunriseTime.toString());
-        values.put("sunset_time", weather.sunsetTime.toString());
+        values.put("sunrise_time", format(weather.sunriseTime));
+        values.put("sunset_time", format(weather.sunsetTime));
+
+        values.put("cloudiness", weather.cloudiness.ordinal());
+        values.put("air_quality_index", weather.airQualityIndex);
 
         values.put("date_of_entry", format(date));
+
 
         db.insert(TABLE, null, values);
         db.close();
@@ -127,5 +136,48 @@ public class WeatherDBHelper extends SQLiteOpenHelper {
         final SimpleDateFormat fmt = new SimpleDateFormat("yyyy/MM/dd", Locale.US);
         fmt.setCalendar(calendar);
         return fmt.format(calendar.getTime());
+    }
+
+    private static GregorianCalendar parse(String date) {
+        final SimpleDateFormat fmt = new SimpleDateFormat("yyyy/MM/dd", Locale.US);
+        try {
+            Date parsedDate = fmt.parse(date);
+            GregorianCalendar calendar = new GregorianCalendar();
+            calendar.setTime(parsedDate);
+            return calendar;
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public Optional<Weather> weatherOf(String city, GregorianCalendar date) {
+        final String WEATHER_FOR = "select temp_min, temp_max, temp_current, humidity, " +
+                "state, country, sunrise_time, sunset_time, air_quality_index, cloudiness " +
+                "from " + TABLE + " where date_of_entry = ? and city = ?";
+
+        SQLiteDatabase db = getReadableDatabase();
+        try (Cursor cur = db.rawQuery(WEATHER_FOR, new String[]{format(date), city})) {
+            if (!cur.moveToFirst()) {
+                return Optional.empty();
+            }
+
+            return Optional.of(new Weather(
+                            new Temperature(
+                                    cur.getDouble(0),
+                                    cur.getDouble(1),
+                                    cur.getDouble(2)
+                            ),
+                    cur.getDouble(3),
+                    city,
+                    cur.getString(4),
+                    cur.getString(5),
+                    parse(cur.getString(6)),
+                    parse(cur.getString(7)),
+                    cur.getInt(8),
+                    Cloudiness.values()[cur.getInt(9)]
+                    )
+            );
+        }
     }
 }

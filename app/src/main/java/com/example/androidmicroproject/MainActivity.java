@@ -21,6 +21,6 @@ public class MainActivity extends AppCompatActivity {
 
         Weather weather = repository.defaultEntry();
 
-        repository.set(weather, new GregorianCalendar(2021, 5, 17));
+        System.out.println("Weather: " + repository.weatherOf("Pune", new GregorianCalendar(2021, 5, 18)));
     }
 }

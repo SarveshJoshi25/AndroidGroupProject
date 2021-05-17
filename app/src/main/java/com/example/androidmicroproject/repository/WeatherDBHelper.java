@@ -131,7 +131,7 @@ public class WeatherDBHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
     }
 
-    public Optional<Weather> weatherOf(String city, GregorianCalendar date) {
+    public Weather weatherOf(String city, GregorianCalendar date) {
         final String WEATHER_FOR = "select temp_min, temp_max, temp_current, humidity, " +
                 "state, country, sunrise_time, sunset_time, air_quality_index, cloudiness " +
                 "from " + TABLE + " where date_of_entry = ? and city = ?";
@@ -139,15 +139,15 @@ public class WeatherDBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = getReadableDatabase();
         try (Cursor cur = db.rawQuery(WEATHER_FOR, new String[]{formatDate(date), city})) {
             if (!cur.moveToFirst()) {
-                return Optional.empty();
+                return null;
             }
 
-            return Optional.of(new Weather(
-                            new Temperature(
-                                    cur.getDouble(0),
-                                    cur.getDouble(1),
-                                    cur.getDouble(2)
-                            ),
+            return new Weather(
+                    new Temperature(
+                            cur.getDouble(0),
+                            cur.getDouble(1),
+                            cur.getDouble(2)
+                    ),
                     cur.getDouble(3),
                     city,
                     cur.getString(4),
@@ -156,7 +156,6 @@ public class WeatherDBHelper extends SQLiteOpenHelper {
                     parseTime(cur.getString(7)),
                     cur.getInt(8),
                     Cloudiness.values()[cur.getInt(9)]
-                    )
             );
         }
     }

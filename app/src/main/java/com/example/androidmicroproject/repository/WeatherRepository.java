@@ -8,5 +8,5 @@ import java.util.Optional;
 public interface WeatherRepository {
     Weather defaultEntry();
     void set(Weather weather, GregorianCalendar date);
-    Optional<Weather> weatherOf(String city, GregorianCalendar date);
+    Weather weatherOf(String city, GregorianCalendar date);
 }

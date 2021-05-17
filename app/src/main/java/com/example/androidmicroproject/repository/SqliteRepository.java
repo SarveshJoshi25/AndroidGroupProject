@@ -25,7 +25,7 @@ public class SqliteRepository implements WeatherRepository {
     }
 
     @Override
-    public Optional<Weather> weatherOf(String city, GregorianCalendar date) {
+    public Weather weatherOf(String city, GregorianCalendar date) {
         return helper.weatherOf(city, date);
     }
 }

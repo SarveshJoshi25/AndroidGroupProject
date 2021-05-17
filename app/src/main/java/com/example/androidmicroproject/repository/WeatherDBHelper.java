@@ -10,11 +10,13 @@ import com.example.androidmicroproject.model.Cloudiness;
 import com.example.androidmicroproject.model.Temperature;
 import com.example.androidmicroproject.model.Weather;
 
+import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
+import java.util.Locale;
 
 public class WeatherDBHelper extends SQLiteOpenHelper {
 
-    private static final String DATABASE = "WeatherDB";
+    private static final String DATABASE = "WeatherDB.db";
     public static final String TABLE = "weather";
 
     public WeatherDBHelper(Context context) {
@@ -38,33 +40,28 @@ public class WeatherDBHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         String sql = "CREATE TABLE " + TABLE + " (" +
-                "date_of_entry text primary key, " +
-                "temp_min double, " +
-                "temp_max double, " +
-                "temp_current double, " +
-                "humidity double, " +
+                /*date_of_entry and city are primary keys*/
+                "date_of_entry text, " +
                 "city text, " +
-                "state text, " +
-                "country text, " +
-                "sunrise_time text, " +
-                "sunset_time text, " +
-                "air_quality_index int" +
+                "temp_min double not null, " +
+                "temp_max double not null, " +
+                "temp_current double not null, " +
+                "humidity double not null, " +
+                "state text not null, " +
+                "country text not null, " +
+                "sunrise_time text not null, " +
+                "sunset_time text not null, " +
+                "air_quality_index int not null," +
+                "primary key(date_of_entry, city)" +
                 ")";
 
         sqLiteDatabase.execSQL(sql);
-
-
-        /*insertData("36.82", "37", "Pune", "Maharashtra", "India", "107", "WeatherDB");
-        insertData("37.90", "40", "Mumbai", "Maharashtra", "India", "102", "WeatherDB");
-        insertData("38.90", "40", "Hyderabad", "Andhra Pradesh", "India", "102", "WeatherDB");
-        insertData("31.90", "32", "Sydney", "Sydney", "Australia", "62", "WeatherDB");
-        insertData("32.90", "30", "New York", "New York", "USA", "58", "WeatherDB");*/
     }
 
     private void insertDummyData() {
-        insert(firstRow);
+        set(firstRow, new GregorianCalendar(2021, 5, 16));
 
-        insert(
+        set(
                 new Weather(
                         new Temperature(28, 37, 32),
                         110,
@@ -75,9 +72,10 @@ public class WeatherDBHelper extends SQLiteOpenHelper {
                         new GregorianCalendar(2021, 5, 17, 17, 30),
                         90,
                         Cloudiness.Cloudy
-                )
+                ),
+                new GregorianCalendar(2021, 5, 17)
         );
-        insert(
+        set(
                 new Weather(
                         new Temperature(28, 37, 32),
                         130,
@@ -88,7 +86,8 @@ public class WeatherDBHelper extends SQLiteOpenHelper {
                         new GregorianCalendar(2021, 5, 16, 17, 30),
                         100,
                         Cloudiness.Cloudy
-                )
+                ),
+                new GregorianCalendar(2021, 5, 18)
         );
 
         try (Cursor cur = getReadableDatabase().rawQuery("select * from " + TABLE, new String[]{})) {
@@ -96,7 +95,9 @@ public class WeatherDBHelper extends SQLiteOpenHelper {
         }
     }
 
-    public void insert(Weather weather) {
+    public void set(Weather weather, GregorianCalendar date) {
+        SQLiteDatabase db = getWritableDatabase();
+        db.delete(TABLE, "city = ? and date_of_entry = ?", new String[]{weather.city, format(date)});
         ContentValues values = new ContentValues();
         values.put("temp_min", weather.temperature.min);
         values.put("temp_max", weather.temperature.max);
@@ -111,7 +112,8 @@ public class WeatherDBHelper extends SQLiteOpenHelper {
         values.put("sunrise_time", weather.sunriseTime.toString());
         values.put("sunset_time", weather.sunsetTime.toString());
 
-        SQLiteDatabase db = getWritableDatabase();
+        values.put("date_of_entry", format(date));
+
         db.insert(TABLE, null, values);
         db.close();
     }
@@ -119,5 +121,11 @@ public class WeatherDBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
+    }
+
+    private static String format(GregorianCalendar calendar) {
+        final SimpleDateFormat fmt = new SimpleDateFormat("yyyy/MM/dd", Locale.US);
+        fmt.setCalendar(calendar);
+        return fmt.format(calendar.getTime());
     }
 }

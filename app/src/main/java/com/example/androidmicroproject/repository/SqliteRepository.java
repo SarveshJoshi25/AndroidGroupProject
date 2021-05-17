@@ -4,6 +4,8 @@ import android.content.Context;
 
 import com.example.androidmicroproject.model.Weather;
 
+import java.util.GregorianCalendar;
+
 public class SqliteRepository implements WeatherRepository {
     WeatherDBHelper helper;
 
@@ -17,12 +19,12 @@ public class SqliteRepository implements WeatherRepository {
     }
 
     @Override
-    public void insert(Weather weather) {
-        helper.insert(weather);
+    public void set(Weather weather, GregorianCalendar date) {
+        helper.set(weather, date);
     }
 
     @Override
-    public Weather weatherOf(String city) {
+    public Weather weatherOf(String city, GregorianCalendar date) {
         return null;
     }
 }

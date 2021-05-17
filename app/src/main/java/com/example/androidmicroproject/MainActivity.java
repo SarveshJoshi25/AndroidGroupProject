@@ -8,6 +8,8 @@ import com.example.androidmicroproject.model.Weather;
 import com.example.androidmicroproject.repository.SqliteRepository;
 import com.example.androidmicroproject.repository.WeatherRepository;
 
+import java.util.GregorianCalendar;
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -19,6 +21,6 @@ public class MainActivity extends AppCompatActivity {
 
         Weather weather = repository.defaultEntry();
 
-        // set texts
+        repository.set(weather, new GregorianCalendar(2021, 5, 17));
     }
 }

@@ -111,7 +111,9 @@ public class WeatherDBHelper extends SQLiteOpenHelper {
         values.put("sunrise_time", weather.sunriseTime.toString());
         values.put("sunset_time", weather.sunsetTime.toString());
 
-        getWritableDatabase().insert(TABLE, null, values);
+        SQLiteDatabase db = getWritableDatabase();
+        db.insert(TABLE, null, values);
+        db.close();
     }
 
 

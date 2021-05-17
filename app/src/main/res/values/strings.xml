@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Android micro project</string>
+    <string-array name="weathers">
+        <item>Sunny</item>
+        <item>Overcast</item>
+        <item>Cloudy</item>
+        <item>Thunderstorm</item>
+    </string-array>
 </resources>

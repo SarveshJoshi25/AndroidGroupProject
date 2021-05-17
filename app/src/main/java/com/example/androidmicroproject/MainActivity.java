@@ -15,16 +15,5 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        WeatherRepository repository = new SqliteRepository(this);
-
-        repository.defaultEntry();
-
-        Spinner spinner = (Spinner) findViewById(R.id.spinner);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.weathers, R.layout.custom_drop_down_item);
-        adapter.setDropDownViewResource(R.layout.custom_drop_down_item);
-//        adapter.setDropDownViewTheme();
-        spinner.setAdapter(adapter);
     }
 }

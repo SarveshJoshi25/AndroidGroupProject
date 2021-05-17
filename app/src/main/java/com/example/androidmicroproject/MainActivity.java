@@ -3,9 +3,8 @@ package com.example.androidmicroproject;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
-import android.widget.ArrayAdapter;
-import android.widget.Spinner;
 
+import com.example.androidmicroproject.model.Weather;
 import com.example.androidmicroproject.repository.SqliteRepository;
 import com.example.androidmicroproject.repository.WeatherRepository;
 
@@ -15,5 +14,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        WeatherRepository repository = new SqliteRepository(this);
+
+        Weather weather = repository.defaultEntry();
+
+        // set texts
     }
 }
